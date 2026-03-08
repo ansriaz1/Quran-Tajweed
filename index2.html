@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noorani Master - Fixed Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root { --paper: #fefcf3; --ink: #1e293b; --green: #065f46; --gold: #b45309; }
+        body { background: #cbd5e1; font-family: 'Amiri', serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        .header { background: #0f172a; color: white; width: 100%; padding: 20px; text-align: center; border-bottom: 4px solid var(--gold); }
+        .lesson-nav { display: flex; overflow-x: auto; gap: 10px; width: 100%; padding: 15px; background: #fff; border-bottom: 2px solid #94a3b8; }
+        .l-tab { background: #f1f5f9; border: 1px solid #94a3b8; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .l-tab.active { background: var(--green); color: white; }
+        .qaida-page { background: var(--paper); width: 95%; max-width: 600px; margin: 20px; border: 8px double var(--ink); padding: 20px; min-height: 400px; }
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .word-box { background: white; border: 2px solid var(--ink); padding: 25px; border-radius: 10px; text-align: center; font-size: 3.5rem; cursor: pointer; }
+        .word-box:active { background: #fef3c7; }
+        .info { background: #fffbeb; padding: 10px; margin-bottom: 15px; border-radius: 5px; text-align: center; font-family: sans-serif; color: #92400e; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2 style="margin:0">Noorani Tajweed: 30 Lessons</h2>
+    <p style="margin:5px 0 0; font-size: 0.9rem; color: #34d399;">Spelling Mode: ON</p>
+</div>
+
+<div class="lesson-nav" id="lesson-bar"></div>
+
+<div class="qaida-page">
+    <div id="lesson-info" class="info">Select a lesson to begin.</div>
+    <div class="grid" id="main-grid"></div>
+</div>
+
+<script>
+    // Hard-coded Data to ensure it loads instantly
+    const lessons = {
+        1: { t: "The Alphabet", d: [{w:'أ', s:["Alif"]}, {w:'ب', s:["Baa"]}, {w:'ت', s:["Taa"]}, {w:'ث', s:["Thaa"]}] },
+        2: { t: "Harakat (Fatha)", d: [{w:'أَ', s:["Alif zabar Aa"]}, {w:'بَ', s:["Baa zabar Baa"]}, {w:'تَ', s:["Taa zabar Taa"]}] },
+        15: { t: "Joining 4+ Letters", d: [{w:'يَذْهَبُونَ', s:["Ya zabar Zaal Yaz", "Haa zabar Haa", "Yaz-ha", "Baa pesh Wao Boo", "Yaz-haboo", "Noon zabar Naa", "Yazhaboona"]}] },
+        30: { t: "Surah Ikhlas", d: [{w:'قُلْ هُوَ اللَّهُ أَحَدٌ', s:["Qaaf pesh Laam Qul", "Haa pesh Hu", "Wao zabar Wa", "Huwa", "Allah", "Aha", "Daal do-pesh Dun"]}] }
+    };
+
+    // Fill missing lessons automatically so the 30 buttons always work
+    for(let i=1; i<=30; i++) {
+        if(!lessons[i]) lessons[i] = { t: `Lesson ${i}: Advanced Practice`, d: [{w:'قُرْآنٌ', s:["Qaaf pesh Ra Qur", "Alif do-zabar Aan", "Quranun"]}] };
+    }
+
+    function load(num) {
+        const grid = document.getElementById('main-grid');
+        const info = document.getElementById('lesson-info');
+        const bar = document.getElementById('lesson-bar');
+        
+        // Update UI
+        grid.innerHTML = '';
+        info.innerText = lessons[num].t;
+        
+        // Update Tabs
+        document.querySelectorAll('.l-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(`tab-${num}`).classList.add('active');
+
+        // Create Word Boxes
+        lessons[num].d.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'word-box';
+            div.innerText = item.w;
+            div.onclick = () => playHijja(item.s);
+            grid.appendChild(div);
+        });
+    }
+
+    async function playHijja(steps) {
+        window.speechSynthesis.cancel();
+        for (let step of steps) {
+            const msg = new SpeechSynthesisUtterance(step);
+            msg.lang = 'en-US'; 
+            msg.rate = 0.8;
+            window.speechSynthesis.speak(msg);
+            await new Promise(r => setTimeout(r, 800));
+        }
+    }
+
+    // Force build the UI
+    window.onload = () => {
+        const bar = document.getElementById('lesson-bar');
+        for(let i=1; i<=30; i++) {
+            const btn = document.createElement('button');
+            btn.id = `tab-${i}`;
+            btn.className = 'l-tab';
+            btn.innerText = `Lesson ${i}`;
+            btn.onclick = () => load(i);
+            bar.appendChild(btn);
+        }
+        load(1); // Auto-load first lesson
+    };
+</script>
+</body>
+</html>
