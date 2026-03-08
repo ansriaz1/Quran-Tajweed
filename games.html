@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Learning Game</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>Letter Recognition Game</h1>
+<p>Click the correct letter!</p>
+
+<button onclick="correct()">ا</button>
+<button onclick="wrong()">ب</button>
+<button onclick="wrong()">ت</button>
+
+<p id="result"></p>
+
+<script>
+function correct(){
+document.getElementById("result").innerText="Correct! 🎉";
+}
+function wrong(){
+document.getElementById("result").innerText="Try Again 🙂";
+}
+</script>
+
+</body>
+</html>
